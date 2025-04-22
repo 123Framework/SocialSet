@@ -1,47 +1,62 @@
-﻿using Microsoft.EntityFrameworkCore;
-using socset.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using TweeterApp.Data;
+using TweeterApp.Models;
 
-
-namespace socset.Repository
+namespace TweeterApp.Repository
 {
     public class FollowRepository : IFollowRepository
     {
-
-        private readonly AppDbContext _appDbContext;
-
-        public FollowRepository(AppDbContext appDbContext)
+        private readonly ApplicationDbContext _context;
+       
+        public FollowRepository(ApplicationDbContext context)
         {
-            _appDbContext = appDbContext;
+            _context = context;
+            
+        }
+
+        public async Task AddAsync(int followerId, int followeeId)
+        {
+            var follow = await _context.Follows.FirstOrDefaultAsync(f => f.FollowerId == followerId && f.FolloweeId == followeeId);
+            if (follow != null)
+            {
+                _context.Follows.Add(follow);
+                await _context.SaveChangesAsync();
+            }
         }
 
 
-        public async Task AddAsync(Follow follow)
-        {
-            _appDbContext.Follows.Add(follow);
-            await _appDbContext.SaveChangesAsync();
-        }
+
 
         public async Task<IEnumerable<ApplicationUser>> GetFollowersAsync(int userId)
         {
-            return await _appDbContext.Follows.Where(f => f.FolloweeId == userId)
-                .Select(f => f.Follower).ToListAsync();
+            return await _context.Follows
+                .Where(f => f.FolloweeId == userId)
+                .Select(f => f.Follower)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetFollowingAsync(int userId)
         {
-            return await _appDbContext.Follows.Where(f => f.FollowerId == userId)
-                .Select(f => f.Followee).ToListAsync();
+            return await _context.Follows
+             .Where(f => f.FollowerId == userId)
+             .Select(f => f.Followee)
+             .ToListAsync();
         }
 
         public async Task<bool> IsFollowingAsync(int followerId, int followeeId)
         {
-            return await _appDbContext.Follows.AnyAsync(f => f.FollowerId == followerId && f.FolloweeId==followeeId);
+            return await (_context.Follows.AnyAsync(f => f.FollowerId == followerId && f.FolloweeId == followeeId));
         }
 
-        public async Task RemoveAsync(Follow follow)
+        public async Task RemoveAsync(int followerId,int followeeId)
         {
-            _appDbContext.Follows.Remove(follow);
-            await _appDbContext.SaveChangesAsync();
+            var follow = await _context.Follows.FirstOrDefaultAsync(f => f.FollowerId == followerId && f.FolloweeId == followeeId);
+            if (follow != null)
+            {
+                _context.Follows.Remove(follow);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

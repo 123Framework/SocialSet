@@ -1,16 +1,13 @@
-﻿using socset.DataLayer;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-namespace socset.Repository
+﻿using TweeterApp.Models;
+
+namespace TweeterApp.Repository
 {
     public interface IPostRepository
     {
-        Task<Post> GetByIdAsync(int id);
-        Task<IEnumerable<Post>> GetAllAsync();
-        Task AddAsync(Post post);
-        Task UpdateAsync(Post post);
+        Task<PostModel> GetByIdAsync(int id);
+        Task<IEnumerable<PostModel>> GetAllAsync();
+        Task AddAsync(PostModel post);
+        Task UpdateAsync(PostModel post);
         Task DeleteAsync(int id);
-
     }
 }
-

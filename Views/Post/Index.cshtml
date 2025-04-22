@@ -1,26 +1,18 @@
-﻿@model IEnumerable<socset.DataLayer.Post>
+﻿@{
 
-<h2>Лента постов</h2>
-<a asp-action="Create" class="btn btn-primary">Создать пост</a>
-@foreach (var post in Model){
+}
+@model IEnumerable<TweeterApp.Models.PostModel>
+<h2>Posts</h2>
+<a asp-action="Create" class="btn btn-primary">Create post</a>
+@foreach(var post in Model)
+{
     <div class="post">
         <h4>@post.Title</h4>
         <p>@post.Content</p>
-        <p>Автор: @post.User.UserName</p>
-        <p>Лайков: @post.Likes.Count</p>
-
-        <form asp-action="LikeTweet" asp-controller="Like" method="post">
-            <input type="hidden" name="postId" value="@post.Id" />
-            <button type="submit" class="btn btn-success">👍 Лайк</button>
-        </form>
-
-        <form asp-action="UnLikePost" asp-controller="Like" method="post">
-            <input type="hidden" name="postId" value="@post.Id" />
-            <button type="submit" class="btn btn-success">Убрать Лайк</button>
-        </form>
-
-        <a asp-action="Edit" asp-route-id="@post.Id">Редактировать</a>
-        <a asp-action="Delete" asp-route-id="@post.Id">Удалить</a>
-        
+        <p>Author:
+            <a asp-controller="Follow" asp-action="Index"  asp-route-userId="@post.UserId">@post.User.UserName</a>
+        </p>
+        <a asp-action="Edit" asp-route-id="@post.Id">Edit</a>
+        <a asp-action="Delete" asp-route-id="@post.Id">Delete</a>
     </div>
 }

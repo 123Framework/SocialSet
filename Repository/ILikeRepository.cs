@@ -1,15 +1,13 @@
-﻿
-using socset.Models;
+﻿using TweeterApp.Models;
 
-
-namespace socset.Repository
+namespace TweeterApp.Repository
 {
-    public interface ILikeRepository 
+    public interface ILikeRepository
     {
-        Task<bool> IsLikedAsync(int userId, int postId);
-        Task<int> GetLikeCountAsync(int postId);
-        Task AddLikeAsync(Like like);
-        Task RemoveLikeAsync(Like like);
-        Task<Like> GetLikeAsync(int userId, int postId);
+        Task<bool> IsLikedAsync(int userId, int PostId);
+        Task<int> GetLikeCountAsync(int PostId);
+        Task AddLikeAsync(LikeModel like);
+        Task RemoveLikeAsync(LikeModel like);
+        Task<LikeModel> GetLikeAsync(int UserId, int PostId);
     }
 }

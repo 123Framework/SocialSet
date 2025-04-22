@@ -1,42 +1,23 @@
-using Elastic.Clients.Elasticsearch;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using socset.Models;
-using System.Security.Claims;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
+using TweeterApp.Models;
+using TweeterApp.Models.ViewModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-
-using Microsoft.IdentityModel.Tokens;
-using socset.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-//[Convert]::ToBase64String((New-Object System.Security.Cryptography.RNGCryptoServiceProvider).GetBytes(32))
-namespace socset.Controllers
+namespace TweeterApp.Controllers
 {
-
-
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ILogger<AccountController> _logger;
-
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
-        }
-        [AllowAnonymous]
-        public IActionResult Register()
-        {
-            return View();
-        }
+        private ILogger<AccountController> _logger;
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterVM model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
@@ -51,7 +32,6 @@ namespace socset.Controllers
                     ActiveAccount = true,
                     GenderId = model.GenderId,
                 };
-
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -60,14 +40,19 @@ namespace socset.Controllers
                     _logger.LogInformation("User {Email} registered succesfully.", model.Email);
                     return RedirectToAction("Index", "Home");
                 }
-
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
                 }
             }
-            _logger.LogWarning("Model state isnt valid(or other error)");
+            _logger.LogWarning("Model state isn't valid(or other error)");
             return View(model);
+        }
+
+        [AllowAnonymous]
+        public IActionResult Register()
+        {
+            return View();
         }
 
         public IActionResult Login()
@@ -77,18 +62,16 @@ namespace socset.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginVM model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");
                 }
-
-                ModelState.AddModelError("", "Invalid login attempt.");
+                ModelState.AddModelError("", "Invalid login attempt");
             }
             return View(model);
         }
@@ -97,6 +80,13 @@ namespace socset.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _logger = logger;   
         }
     }
 }

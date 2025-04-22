@@ -1,15 +1,15 @@
-﻿@model socset.DataLayer.Post
-<h2>Создать пост</h2>
+﻿
+@model TweeterApp.Models.PostModel
+
+<h2>Create post</h2>
 <form asp-action="Create" method="post">
-    <div><label>Заголовок</label>
-        <input asp-for="Title" class="form-control" />
+    <div>
+        <label>Title</label>
+        <input asp-for="Title" class="form-control"/>
     </div>
     <div>
-        <label>Текст поста</label>
-        <textarea asp-for="Content" class="form-control"</textarea>
+        <label>Post contents</label>
+        <textarea asp-for="Content" class="form-control"></textarea>
     </div>
-    <button type="submit" class="btn btn-primary">
-        Опубликовать
-    </button>
-
+    <button type="submit" class="btn btn-primary">Publish</button>
 </form>
